@@ -1,35 +1,56 @@
-use tide::Request;
-use tide::Response;
-use sqlite::Connection;
 
-#[async_std::main]
-async fn main() -> tide::Result<()> {
-    tide::log::start();
-    let mut app = tide::new();
-    app.at("/status").get(status);
-    app.at("/status/:location").get(status);
-    app.listen("127.0.0.1:8080").await?;
-    Ok(())
+use sqlite::Connection;
+use std::env;
+
+#[derive(Debug)]
+struct Host{
+    name: String,
+    ip: Option<String>
 }
 
-async fn status(req: Request<()>) -> tide::Result{
-    let param = req.param("location");
-    match param {
-        Ok(location) => {
-            if let Some(url) = req.host(){
+impl Host {
+    fn new(name: String) -> Host{
+        Host { name, ip: None }
+    }
+    fn store(&mut self){
+        if self.ip == None {
+            self.get_ip();
+        }
+        match &self.ip {
+            Some(ip) => {
                 Connection::open("./ips.db")
                 .expect("Cannot open database")
                 .execute(
                     format!(
-                    "CREATE TABLE IF NOT EXISTS addresses(location TEXT NOT NULL, url TEXT NOT NULL);
-                    INSERT INTO addresses VALUES('{}','{}');
+                    "CREATE TABLE IF NOT EXISTS addresses(hostname TEXT NOT NULL, ip TEXT NOT NULL,Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);
+                    INSERT INTO addresses VALUES('{}','{:?}',CURRENT_TIMESTAMP);
                     
-                    ",location, url))
-                    .expect("Failed to write values to table");
-            }
+                    ",self.name, ip)).expect("Writing to database failed.");
+                
+            },
+            None =>{ println!("Missing Ip-address"); return ();}
         }
-        Err(_e) => return Ok(Response::new(tide::StatusCode::Ok))
+        
     }
-    Ok(Response::new(tide::StatusCode::Ok))
+
+    fn get_ip(&mut self){
+        println!("Getting IP-addr for {:?}", self.name);
+        match dns_lookup::lookup_host(&self.name){
+            Ok(addr) => self.ip = Some(addr[0].to_string()),
+            Err(_) => println!("Resolving IP address failed for {}", self.name)
+        }
+        
+    }
+}
+
+fn main() {
+
+    let args: Vec<String> = env::args().collect();
+    println!("args: {:?}",args);
+    let hostname = &args[1];
+
+    let mut host = Host::new(hostname.to_string());
+
+    host.store();
 
 }
