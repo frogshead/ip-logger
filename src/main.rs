@@ -26,6 +26,7 @@ impl Host {
                     INSERT INTO addresses VALUES('{}','{:?}',CURRENT_TIMESTAMP);
                     
                     ",self.name, ip)).expect("Writing to database failed.");
+
                 
             },
             None =>{ println!("Missing Ip-address"); return ();}
@@ -46,11 +47,23 @@ impl Host {
 fn main() {
 
     let args: Vec<String> = env::args().collect();
-    println!("args: {:?}",args);
+    if args.len() != 2 {
+        usage();
+        return;
+    }
+
+
     let hostname = &args[1];
 
     let mut host = Host::new(hostname.to_string());
 
     host.store();
 
+}
+
+fn usage() -> (){
+    println!("Give a hostname as a firts command line argument and resolved ip is stored to sqlite database");
+    println!();
+    println!("Example: ip-logger viitamäki.fi");
+    ()
 }
