@@ -51,14 +51,9 @@ fn main() {
         usage();
         return;
     }
-
-
     let hostname = &args[1];
-
     let mut host = Host::new(hostname.to_string());
-
     host.store();
-
 }
 
 fn usage() -> (){
