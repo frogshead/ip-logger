@@ -1,0 +1,11 @@
+[Unit]
+Description = Store host names and IP-addresses periodically. In case of failure updating the ip to dy.fi -service.
+
+[Service]
+# Oneshot allows multiple ExecStart, run in sequantilly
+Type=oneshot
+ExecStart=/usr/local/bin/ip-logger kauhajoki.dy.fi
+ExecStart=/usr/local/bin/ip-logger minix.dy.fi
+
+[Install]
+WantedBy=default.target
