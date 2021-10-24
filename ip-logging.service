@@ -4,9 +4,9 @@ Description = Store host names and IP-addresses periodically. In case of failure
 [Service]
 # Oneshot allows multiple ExecStart, run in sequantilly
 Type=oneshot
-ExecStart=/%h/bin/ip-logger kauhajoki.dy.fi
-ExecStart=/%h/bin/ip-logger minix.dy.fi
-WorkingDirectory=/%h/bin
+ExecStart=/usr/local/bin/ip-logger kauhajoki.dy.fi
+ExecStart=/usr/local/bin/ip-logger minix.dy.fi
+WorkingDirectory=/home/mikko/bin
 
 [Install]
 WantedBy=default.target
