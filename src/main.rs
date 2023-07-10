@@ -57,7 +57,7 @@ fn main() {
 }
 
 fn usage() -> (){
-    println!("Give a hostname as a firts command line argument and resolved ip is stored to sqlite database");
+    println!("Give a hostname as a first command line argument and resolved ip is stored to sqlite database");
     println!();
     println!("Example: ip-logger viitamäki.fi");
     ()
